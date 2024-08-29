@@ -11,9 +11,23 @@ int main() {
     std::cout << "Enter your time zone offset from GMT/UTC (e.g., -5 for EST, +1 for CET): ";
     std::cin >> timeZoneOffset;
 
-    // Ask the user for the desired precision (s for seconds, ms for milliseconds, us for microseconds, ns for nanoseconds)
-    std::cout << "Enter the desired precision (s for seconds, ms for milliseconds, us for microseconds, ns for nanoseconds): ";
+    // Ask the user for the desired precision (milliseconds, microseconds, or nanoseconds)
+    std::cout << "Enter the desired precision (ms for milliseconds, us for microseconds, ns for nanoseconds): ";
     std::cin >> precision;
+
+    // Determine sleep duration based on precision
+    std::chrono::milliseconds sleepDuration(10); // Default sleep duration (milliseconds)
+
+    if (precision == "ms") {
+        sleepDuration = std::chrono::milliseconds(10);
+    } else if (precision == "us") {
+        sleepDuration = std::chrono::microseconds(10);
+    } else if (precision == "ns") {
+        sleepDuration = std::chrono::nanoseconds(10);
+    } else {
+        std::cout << "Invalid precision entered!" << std::endl;
+        return 1;
+    }
 
     while (true) {
         // Get the current time with high precision
@@ -33,22 +47,13 @@ int main() {
             localTime->tm_mday -= 1;
         }
 
-        // Clear the screen (optional, works on most terminals)
-        std::cout << "\033[2J\033[1;1H";
-
         // Determine the desired precision
-        if (precision == "s") {
-            // Display the time with seconds
-            std::cout << "Current time in your time zone: "
-                      << std::setfill('0') << std::setw(2) << localTime->tm_hour << ":"
-                      << std::setfill('0') << std::setw(2) << localTime->tm_min << ":"
-                      << std::setfill('0') << std::setw(2) << localTime->tm_sec << " s" << std::endl;
-        }
-        else if (precision == "ms") {
+        if (precision == "ms") {
             auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(
                                     now.time_since_epoch()) % 1000;
 
             // Display the time with milliseconds
+            std::cout << "\033[2J\033[1;1H";  // Clear the screen (optional)
             std::cout << "Current time in your time zone: "
                       << std::setfill('0') << std::setw(2) << localTime->tm_hour << ":"
                       << std::setfill('0') << std::setw(2) << localTime->tm_min << ":"
@@ -60,6 +65,7 @@ int main() {
                                     now.time_since_epoch()) % 1000000;
 
             // Display the time with microseconds
+            std::cout << "\033[2J\033[1;1H";  // Clear the screen (optional)
             std::cout << "Current time in your time zone: "
                       << std::setfill('0') << std::setw(2) << localTime->tm_hour << ":"
                       << std::setfill('0') << std::setw(2) << localTime->tm_min << ":"
@@ -71,21 +77,17 @@ int main() {
                                    now.time_since_epoch()) % 1000000000;
 
             // Display the time with nanoseconds
+            std::cout << "\033[2J\033[1;1H";  // Clear the screen (optional)
             std::cout << "Current time in your time zone: "
                       << std::setfill('0') << std::setw(2) << localTime->tm_hour << ":"
                       << std::setfill('0') << std::setw(2) << localTime->tm_min << ":"
                       << std::setfill('0') << std::setw(2) << localTime->tm_sec << "."
                       << std::setfill('0') << std::setw(9) << nanoseconds.count() << " ns" << std::endl;
-        } 
-        else {
-            std::cout << "Invalid precision entered!" << std::endl;
-            break;
         }
 
-        // Wait for a short period before updating (e.g., 10 milliseconds)
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        // Wait for the specified period before updating
+        std::this_thread::sleep_for(sleepDuration);
     }
 
     return 0;
 }
-
