@@ -11,8 +11,8 @@ int main() {
     std::cout << "Enter your time zone offset from GMT/UTC (e.g., -5 for EST, +1 for CET): ";
     std::cin >> timeZoneOffset;
 
-    // Ask the user for the desired precision (milliseconds, microseconds, or nanoseconds)
-    std::cout << "Enter the desired precision (ms for milliseconds, us for microseconds, ns for nanoseconds): ";
+    // Ask the user for the desired precision (s for seconds, ms for milliseconds, us for microseconds, ns for nanoseconds)
+    std::cout << "Enter the desired precision (s for seconds, ms for milliseconds, us for microseconds, ns for nanoseconds): ";
     std::cin >> precision;
 
     while (true) {
@@ -33,13 +33,22 @@ int main() {
             localTime->tm_mday -= 1;
         }
 
+        // Clear the screen (optional, works on most terminals)
+        std::cout << "\033[2J\033[1;1H";
+
         // Determine the desired precision
-        if (precision == "ms") {
+        if (precision == "s") {
+            // Display the time with seconds
+            std::cout << "Current time in your time zone: "
+                      << std::setfill('0') << std::setw(2) << localTime->tm_hour << ":"
+                      << std::setfill('0') << std::setw(2) << localTime->tm_min << ":"
+                      << std::setfill('0') << std::setw(2) << localTime->tm_sec << " s" << std::endl;
+        }
+        else if (precision == "ms") {
             auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(
                                     now.time_since_epoch()) % 1000;
 
             // Display the time with milliseconds
-            std::cout << "\033[2J\033[1;1H";  // Clear the screen (optional)
             std::cout << "Current time in your time zone: "
                       << std::setfill('0') << std::setw(2) << localTime->tm_hour << ":"
                       << std::setfill('0') << std::setw(2) << localTime->tm_min << ":"
@@ -51,7 +60,6 @@ int main() {
                                     now.time_since_epoch()) % 1000000;
 
             // Display the time with microseconds
-            std::cout << "\033[2J\033[1;1H";  // Clear the screen (optional)
             std::cout << "Current time in your time zone: "
                       << std::setfill('0') << std::setw(2) << localTime->tm_hour << ":"
                       << std::setfill('0') << std::setw(2) << localTime->tm_min << ":"
@@ -63,7 +71,6 @@ int main() {
                                    now.time_since_epoch()) % 1000000000;
 
             // Display the time with nanoseconds
-            std::cout << "\033[2J\033[1;1H";  // Clear the screen (optional)
             std::cout << "Current time in your time zone: "
                       << std::setfill('0') << std::setw(2) << localTime->tm_hour << ":"
                       << std::setfill('0') << std::setw(2) << localTime->tm_min << ":"
@@ -81,3 +88,4 @@ int main() {
 
     return 0;
 }
+
